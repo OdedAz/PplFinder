@@ -7,9 +7,8 @@ import FavoriteIcon from "@material-ui/icons/Favorite";
 import * as S from "./style";
 
 const UserList = ({ users, isLoading }) => {
-  console.log({ users });
   const [hoveredUserId, setHoveredUserId] = useState();
-  const [selectedFilters, steSelectedFilters] = useState([]);
+  const [selectedFilters, setSelectedFilters] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState(users);
   const [isFilterActivated, setIsFilterActivated] = useState(false);
   const [favoriteUsers, setFavoriteUsers] = useState([]);
@@ -28,17 +27,29 @@ const UserList = ({ users, isLoading }) => {
   const handleMouseLeave = () => {
     setHoveredUserId();
   };
-  const chooseFavorite = (el) => {
-    const newArray = favoriteUsers;
-    // newArray.push(el);
-    // setFavoriteUsers(newArray);
-    console.log(favoriteUsers);
+
+  const chooseFavorite = (user) => {
+    let newFavoriteUsers = [...favoriteUsers];
+    const isAlreadyInFavorites = favoriteUsers.find(
+      (x) => user?.id?.value === x?.id?.value
+    );
+    if (!isAlreadyInFavorites) {
+      newFavoriteUsers.push(user);
+    } else {
+      newFavoriteUsers = favoriteUsers.filter(
+        (favorituser) => user.id !== favorituser.id
+      );
+    }
+    setFavoriteUsers(newFavoriteUsers);
+    sessionStorage.setItem("favoritUsers", JSON.stringify(newFavoriteUsers));
+    const sessionFavoritUsers = JSON.parse(sessionStorage.getItem("favoritUsers"));
   };
+
   const handleCheck = (event) => {
     const isFiltered = selectedFilters.filter((item) => item.key === event);
     if (isFiltered.length === 0) {
       const filterToAdd = filtersByState.filter((item) => item.key === event);
-      selectedFilters.push(filterToAdd[0]);
+      setSelectedFilters([...selectedFilters, filterToAdd[0]]);
     } else {
       const indexOfFilter = selectedFilters.findIndex((item) => item.key === event);
       selectedFilters.splice(indexOfFilter, 1);
@@ -52,6 +63,16 @@ const UserList = ({ users, isLoading }) => {
     }
     setFilteredUsers(filteredUsersList);
   };
+
+  const checkIfFavorite = (user) => {
+    const isFavorite = favoriteUsers?.findIndex((favoriteUser) => {
+      return favoriteUser.id === user.id;
+    });
+    console.log("here-isFavorite ", isFavorite);
+    if (isFavorite === -1) return false;
+    return true;
+  };
+
   return (
     <S.UserList>
       <S.Filters>
@@ -63,11 +84,12 @@ const UserList = ({ users, isLoading }) => {
       </S.Filters>
       <S.List>
         {(isFilterActivated ? filteredUsers : users).map((user, index) => {
+          const isHeartIconVisible = ((index === hoveredUserId) || checkIfFavorite(user));
           return (
             <S.User
               key={index}
               onMouseEnter={() => handleMouseEnter(index)}
-              onMouseLeave={handleMouseLeave}
+              onMouseLeave={() => handleMouseLeave}
             >
               <S.UserPicture src={user?.picture.large} alt="" />
               <S.UserInfo>
@@ -82,10 +104,9 @@ const UserList = ({ users, isLoading }) => {
                   {user?.location.city} {user?.location.country}
                 </Text>
               </S.UserInfo>
-              <S.IconButtonWrapper isVisible={index === hoveredUserId}>
-                <IconButton>
-              
-                  <FavoriteIcon onClick={chooseFavorite(user)} color="error" />
+              <S.IconButtonWrapper isVisible={isHeartIconVisible}>
+                <IconButton onClick={() => chooseFavorite(user)}>
+                  <FavoriteIcon color="error" />
                 </IconButton>
               </S.IconButtonWrapper>
             </S.User>

@@ -10,7 +10,7 @@ const Home = () => {
   return (
     <S.Home>
       <S.Content>
-        <S.Header>
+        <S.Header users={users}>
           <Text size="64px" bold>
             PplFinder
           </Text>
