@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Text from "components/Text";
 import Spinner from "components/Spinner";
 import CheckBox from "components/CheckBox";
+import { TabContext } from "TabContext";
+import { usePeopleFetch } from "hooks";
+
 import IconButton from "@material-ui/core/IconButton";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import * as S from "./style";
+import { countryFilters } from "../../constant";
 
 const UserList = ({ users, isLoading }) => {
   const [hoveredUserId, setHoveredUserId] = useState();
-  const [selectedFilters, setSelectedFilters] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState(users);
-  const [isFilterActivated, setIsFilterActivated] = useState(false);
+  const [selectedCountriesFilters, setSelectedCountriesFilters] = useState([]);
   const [favoriteUsers, setFavoriteUsers] = useState([]);
-  const filtersByState = [
-    { key: "BR", value: "Brazil", checked: false },
-    { key: "AU", value: "Australia", checked: false },
-    { key: "CA", value: "Canada", checked: false },
-    { key: "GE", value: "Germany", checked: false },
-    { key: "MX", value: "Mexico", checked: false },
-  ];
+  const { tabValue, setTabValue } = useContext(TabContext);
+  const additionalUsersTemp = usePeopleFetch();
+  const [additionalUsers,setAdditionalUsers] = useState(additionalUsersTemp.users);
+  console.log({additionalUsers})
+  
 
   const handleMouseEnter = (index) => {
     setHoveredUserId(index);
@@ -27,10 +27,32 @@ const UserList = ({ users, isLoading }) => {
   const handleMouseLeave = () => {
     setHoveredUserId();
   };
+  const handleScroll = async (e) => {
+    console.log("handleScroll:")
+    // console.log("users: ", users)
+    // console.log({additionalUsers})
+    // console.log("Top: ", e.target.scrollTop)
+    // console.log("win: ", window.innerHeight)
+    // console.log("height: ", e.target.scrollHeight)
+    if (window.innerHeight + e.target.scrollTop >= e.target.scrollHeight) {
+      users=[...users,...additionalUsers?.users]
+    }
+  }
+
+  useEffect(() => {
+    
+    document.querySelector('.list-wrapper').addEventListener('scroll', handleScroll);
+  },[])
+
+  // const test = usePeopleFetch();
+  // console.log({test});
+
+  
 
   const chooseFavorite = (user) => {
-    let newFavoriteUsers = [...favoriteUsers];
-    const isAlreadyInFavorites = favoriteUsers.find(
+    const sessionFavoritUsers = JSON.parse(sessionStorage.getItem("favoritUsers"));
+    let newFavoriteUsers = [...sessionFavoritUsers];
+    const isAlreadyInFavorites = newFavoriteUsers.find(
       (x) => user?.id?.value === x?.id?.value
     );
     if (!isAlreadyInFavorites) {
@@ -42,49 +64,60 @@ const UserList = ({ users, isLoading }) => {
     }
     setFavoriteUsers(newFavoriteUsers);
     sessionStorage.setItem("favoritUsers", JSON.stringify(newFavoriteUsers));
-    const sessionFavoritUsers = JSON.parse(sessionStorage.getItem("favoritUsers"));
-  };
-
-  const handleCheck = (event) => {
-    const isFiltered = selectedFilters.filter((item) => item.key === event);
-    if (isFiltered.length === 0) {
-      const filterToAdd = filtersByState.filter((item) => item.key === event);
-      setSelectedFilters([...selectedFilters, filterToAdd[0]]);
-    } else {
-      const indexOfFilter = selectedFilters.findIndex((item) => item.key === event);
-      selectedFilters.splice(indexOfFilter, 1);
-      if (selectedFilters.length === 0) setIsFilterActivated(false);
-    }
-    let filteredUsersList = [];
-    if (selectedFilters.length > 0) setIsFilterActivated(true);
-    for (let index in selectedFilters) {
-      const newArray = users.filter((item) => item.nat === selectedFilters[index].key);
-      filteredUsersList = filteredUsersList.concat(newArray);
-    }
-    setFilteredUsers(filteredUsersList);
   };
 
   const checkIfFavorite = (user) => {
     const isFavorite = favoriteUsers?.findIndex((favoriteUser) => {
       return favoriteUser.id === user.id;
     });
-    console.log("here-isFavorite ", isFavorite);
     if (isFavorite === -1) return false;
     return true;
+  };
+
+  const handleCheckCountry = (keyToMatch) => {
+    const isFilteredCountry = selectedCountriesFilters.find((key) => key === keyToMatch);
+    const newSelectedCountriesFilters = [...selectedCountriesFilters];
+
+    if (!isFilteredCountry) {
+      const filterToAdd = countryFilters.find(
+        (countryFilter) => countryFilter.key === keyToMatch
+      );
+      newSelectedCountriesFilters.push(filterToAdd.key);
+      setSelectedCountriesFilters(newSelectedCountriesFilters);
+    } else {
+      const indexOfFilter = selectedCountriesFilters.findIndex(
+        (key) => key === keyToMatch
+      );
+      newSelectedCountriesFilters.splice(indexOfFilter, 1);
+      setSelectedCountriesFilters(newSelectedCountriesFilters)
+
+      if (newSelectedCountriesFilters.length === 0) setSelectedCountriesFilters([]);
+    }
+  };
+
+  const dataToPresentInList = () => {
+    const filteredUsers = selectedCountriesFilters.length
+      ? users.filter((user) =>  selectedCountriesFilters.includes(user.nat))
+      : users;
+    if (tabValue === 0) return filteredUsers;
+    if (tabValue === 1) {
+      const sessionFavoritUsers = JSON.parse(sessionStorage.getItem("favoritUsers"));
+      return sessionFavoritUsers;
+    }
   };
 
   return (
     <S.UserList>
       <S.Filters>
-        <CheckBox value="BR" label="Brazil" onChange={handleCheck} />
-        <CheckBox value="AU" label="Australia" onChange={handleCheck} />
-        <CheckBox value="CA" label="Canada" onChange={handleCheck} />
-        <CheckBox value="GE" label="Germany" onChange={handleCheck} />
-        <CheckBox value="MX" label="Mexico" onChange={handleCheck} />
+        <CheckBox value="BR" label="Brazil" onChange={handleCheckCountry} />
+        <CheckBox value="AU" label="Australia" onChange={handleCheckCountry} />
+        <CheckBox value="CA" label="Canada" onChange={handleCheckCountry} />
+        <CheckBox value="GE" label="Germany" onChange={handleCheckCountry} />
+        <CheckBox value="MX" label="Mexico" onChange={handleCheckCountry} />
       </S.Filters>
-      <S.List>
-        {(isFilterActivated ? filteredUsers : users).map((user, index) => {
-          const isHeartIconVisible = ((index === hoveredUserId) || checkIfFavorite(user));
+      <S.List className="list-wrapper">
+        {dataToPresentInList().map((user, index) => {
+          const isHeartIconVisible = index === hoveredUserId || checkIfFavorite(user);
           return (
             <S.User
               key={index}

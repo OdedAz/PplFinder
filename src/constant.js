@@ -18,3 +18,11 @@ export const COLORS = {
   primary: "primary",
   secondary: "secondary",
 };
+
+export const countryFilters = [
+  { key: "BR", value: "Brazil" },
+  { key: "AU", value: "Australia" },
+  { key: "CA", value: "Canada" },
+  { key: "GE", value: "Germany" },
+  { key: "MX", value: "Mexico" },
+];
