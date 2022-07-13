@@ -16,7 +16,6 @@ const UserList = ({ users, isLoading }) => {
   const [favoriteUsers, setFavoriteUsers] = useState([]);
   const { tabValue, setTabValue } = useContext(TabContext);
   const additionalUsers = usePeopleFetch();
-  
   const handleMouseEnter = (index) => {
     setHoveredUserId(index);
   };
@@ -27,7 +26,6 @@ const UserList = ({ users, isLoading }) => {
   const handleScroll = (e) => {
     if (window.innerHeight + e.target.scrollTop >= e.target.scrollHeight) {
       console.log("additionalUsers", additionalUsers)
-      console.log()
     }
   }
 
@@ -44,9 +42,13 @@ const UserList = ({ users, isLoading }) => {
     if (!isAlreadyInFavorites) {
       newFavoriteUsers.push(user);
     } else {
+      console.log(user.id)
       newFavoriteUsers = favoriteUsers.filter(
-        (favorituser) => user.id !== favorituser.id
+        (favorituser) => {
+          return parseInt(user.id.value) !== parseInt(favorituser.id.value)
+        }
       );
+      console.log(newFavoriteUsers)
     }
     setFavoriteUsers(newFavoriteUsers);
     sessionStorage.setItem("favoritUsers", JSON.stringify(newFavoriteUsers));
@@ -82,16 +84,20 @@ const UserList = ({ users, isLoading }) => {
   };
 
   const dataToPresentInList = () => {
+    
     const filteredUsers = selectedCountriesFilters.length
       ? users.filter((user) =>  selectedCountriesFilters.includes(user.nat))
       : users;
     if (tabValue === 0) return filteredUsers;
     if (tabValue === 1) {
       const sessionFavoritUsers = JSON.parse(sessionStorage.getItem("favoritUsers"));
-      return sessionFavoritUsers;
+      let filteredFavoriteUser = []
+      if (selectedCountriesFilters.length){
+        filteredFavoriteUser = sessionFavoritUsers.filter((user) =>  selectedCountriesFilters.includes(user.nat))
+      }
+      return selectedCountriesFilters.length? filteredFavoriteUser:sessionFavoritUsers;
     }
   };
-  // console.log({additionalUsers})
   return (
     <S.UserList>
       <S.Filters>
@@ -103,7 +109,7 @@ const UserList = ({ users, isLoading }) => {
       </S.Filters>
       <S.List className="list-wrapper">
         {dataToPresentInList().map((user, index) => {
-          const isHeartIconVisible = index === hoveredUserId || checkIfFavorite(user);
+          const isHeartIconVisible = (index === hoveredUserId || checkIfFavorite(user));
           return (
             <S.User
               key={index}
