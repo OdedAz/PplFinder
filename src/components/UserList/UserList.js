@@ -15,11 +15,8 @@ const UserList = ({ users, isLoading }) => {
   const [selectedCountriesFilters, setSelectedCountriesFilters] = useState([]);
   const [favoriteUsers, setFavoriteUsers] = useState([]);
   const { tabValue, setTabValue } = useContext(TabContext);
-  const additionalUsersTemp = usePeopleFetch();
-  const [additionalUsers,setAdditionalUsers] = useState(additionalUsersTemp.users);
-  console.log({additionalUsers})
+  const additionalUsers = usePeopleFetch();
   
-
   const handleMouseEnter = (index) => {
     setHoveredUserId(index);
   };
@@ -27,27 +24,16 @@ const UserList = ({ users, isLoading }) => {
   const handleMouseLeave = () => {
     setHoveredUserId();
   };
-  const handleScroll = async (e) => {
-    console.log("handleScroll:")
-    // console.log("users: ", users)
-    // console.log({additionalUsers})
-    // console.log("Top: ", e.target.scrollTop)
-    // console.log("win: ", window.innerHeight)
-    // console.log("height: ", e.target.scrollHeight)
+  const handleScroll = (e) => {
     if (window.innerHeight + e.target.scrollTop >= e.target.scrollHeight) {
-      users=[...users,...additionalUsers?.users]
+      console.log("additionalUsers", additionalUsers)
+      console.log()
     }
   }
 
   useEffect(() => {
-    
     document.querySelector('.list-wrapper').addEventListener('scroll', handleScroll);
   },[])
-
-  // const test = usePeopleFetch();
-  // console.log({test});
-
-  
 
   const chooseFavorite = (user) => {
     const sessionFavoritUsers = JSON.parse(sessionStorage.getItem("favoritUsers"));
@@ -105,7 +91,7 @@ const UserList = ({ users, isLoading }) => {
       return sessionFavoritUsers;
     }
   };
-
+  // console.log({additionalUsers})
   return (
     <S.UserList>
       <S.Filters>

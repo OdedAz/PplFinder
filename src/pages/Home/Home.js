@@ -6,6 +6,7 @@ import * as S from "./style";
 
 const Home = () => {
   const { users, isLoading } = usePeopleFetch();
+  
   return (
     <S.Home>
       <S.Content>
@@ -14,7 +15,10 @@ const Home = () => {
             PplFinder
           </Text>
         </S.Header>
-        <UserList users={users} isLoading={isLoading} />
+        <UserList
+          users={users}
+          isLoading={isLoading}
+        />
       </S.Content>
     </S.Home>
   );
