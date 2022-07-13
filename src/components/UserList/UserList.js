@@ -10,12 +10,14 @@ import FavoriteIcon from "@material-ui/icons/Favorite";
 import * as S from "./style";
 import { countryFilters } from "../../constant";
 
-const UserList = ({ users, isLoading }) => {
+const UserList = () => {
+  const { users, isLoading, increasePage } = usePeopleFetch();
+
   const [hoveredUserId, setHoveredUserId] = useState();
   const [selectedCountriesFilters, setSelectedCountriesFilters] = useState([]);
   const [favoriteUsers, setFavoriteUsers] = useState([]);
   const { tabValue, setTabValue } = useContext(TabContext);
-  const additionalUsers = usePeopleFetch();
+
   const handleMouseEnter = (index) => {
     setHoveredUserId(index);
   };
@@ -25,13 +27,13 @@ const UserList = ({ users, isLoading }) => {
   };
   const handleScroll = (e) => {
     if (window.innerHeight + e.target.scrollTop >= e.target.scrollHeight) {
-      console.log("additionalUsers", additionalUsers)
+      increasePage();
     }
-  }
+  };
 
   useEffect(() => {
-    document.querySelector('.list-wrapper').addEventListener('scroll', handleScroll);
-  },[])
+    document.querySelector(".list-wrapper").addEventListener("scroll", handleScroll);
+  }, []);
 
   const chooseFavorite = (user) => {
     const sessionFavoritUsers = JSON.parse(sessionStorage.getItem("favoritUsers"));
@@ -42,13 +44,11 @@ const UserList = ({ users, isLoading }) => {
     if (!isAlreadyInFavorites) {
       newFavoriteUsers.push(user);
     } else {
-      console.log(user.id)
       newFavoriteUsers = favoriteUsers.filter(
         (favorituser) => {
           return parseInt(user.id.value) !== parseInt(favorituser.id.value)
         }
       );
-      console.log(newFavoriteUsers)
     }
     setFavoriteUsers(newFavoriteUsers);
     sessionStorage.setItem("favoritUsers", JSON.stringify(newFavoriteUsers));
@@ -77,7 +77,7 @@ const UserList = ({ users, isLoading }) => {
         (key) => key === keyToMatch
       );
       newSelectedCountriesFilters.splice(indexOfFilter, 1);
-      setSelectedCountriesFilters(newSelectedCountriesFilters)
+      setSelectedCountriesFilters(newSelectedCountriesFilters);
 
       if (newSelectedCountriesFilters.length === 0) setSelectedCountriesFilters([]);
     }
@@ -86,7 +86,7 @@ const UserList = ({ users, isLoading }) => {
   const dataToPresentInList = () => {
     
     const filteredUsers = selectedCountriesFilters.length
-      ? users.filter((user) =>  selectedCountriesFilters.includes(user.nat))
+      ? users.filter((user) => selectedCountriesFilters.includes(user.nat))
       : users;
     if (tabValue === 0) return filteredUsers;
     if (tabValue === 1) {
@@ -108,7 +108,7 @@ const UserList = ({ users, isLoading }) => {
         <CheckBox value="MX" label="Mexico" onChange={handleCheckCountry} />
       </S.Filters>
       <S.List className="list-wrapper">
-        {dataToPresentInList().map((user, index) => {
+        {dataToPresentInList()?.map((user, index) => {
           const isHeartIconVisible = (index === hoveredUserId || checkIfFavorite(user));
           return (
             <S.User
