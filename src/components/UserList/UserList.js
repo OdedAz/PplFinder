@@ -3,22 +3,20 @@ import Text from "components/Text";
 import Spinner from "components/Spinner";
 import CheckBox from "components/CheckBox";
 import { TabContext } from "TabContext";
-import { usePeopleFetch } from "hooks";
 
 import IconButton from "@material-ui/core/IconButton";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import * as S from "./style";
 import { countryFilters } from "../../constant";
 
-const UserList = () => {
-  const { tabValue, setTabValue } = useContext(TabContext);
-  const { users, isLoading, increasePage } = usePeopleFetch();
+const UserList = ({ users, isLoading, increasePage }) => {
+  console.log("home page")
+
   const [hoveredUserId, setHoveredUserId] = useState();
   const [selectedCountriesFilters, setSelectedCountriesFilters] = useState([]);
   const sessionFavoritUsers = JSON.parse(sessionStorage.getItem("favoritUsers"));
   const [favoriteUsers, setFavoriteUsers] = useState(sessionFavoritUsers);
   const usersListRef = useRef();
-
   const handleMouseEnter = (index) => {
     setHoveredUserId(index);
   };
@@ -27,13 +25,10 @@ const UserList = () => {
     setHoveredUserId();
   };
   const handleScroll = () => {
-    console.log("here: ", {tabValue})
-
     if (usersListRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = usersListRef.current;
       if (scrollTop + clientHeight === scrollHeight) {
-        console.log("reached bottom");
-        increasePage(); 
+        increasePage();
       }
     }
   };
@@ -42,7 +37,8 @@ const UserList = () => {
   }, []);
 
   const chooseFavorite = (user) => {
-    let newFavoriteUsers = [...sessionFavoritUsers];
+    const oldFavoritUsers = sessionFavoritUsers ? [...sessionFavoritUsers] : [];
+    let newFavoriteUsers = [...oldFavoritUsers];
     const isAlreadyInFavorites = newFavoriteUsers.find(
       (x) => user?.id?.value === x?.id?.value
     );
@@ -90,17 +86,7 @@ const UserList = () => {
     const filteredUsers = selectedCountriesFilters.length
       ? users.filter((user) => selectedCountriesFilters.includes(user.nat))
       : users;
-    if (tabValue === 0) return filteredUsers;
-    if (tabValue === 1) {
-      const sessionFavoritUsers = JSON.parse(sessionStorage.getItem("favoritUsers"));
-      let filteredFavoriteUser = [];
-      if (selectedCountriesFilters.length) {
-        filteredFavoriteUser = sessionFavoritUsers.filter((user) =>
-          selectedCountriesFilters.includes(user.nat)
-        );
-      }
-      return selectedCountriesFilters.length ? filteredFavoriteUser : sessionFavoritUsers;
-    }
+    return selectedCountriesFilters.length ? filteredUsers : users;
   };
 
   return (
