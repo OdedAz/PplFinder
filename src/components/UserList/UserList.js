@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import Text from "components/Text";
 import Spinner from "components/Spinner";
 import CheckBox from "components/CheckBox";
@@ -11,12 +11,13 @@ import * as S from "./style";
 import { countryFilters } from "../../constant";
 
 const UserList = () => {
-  const { users, isLoading, increasePage } = usePeopleFetch();
-
   const [hoveredUserId, setHoveredUserId] = useState();
   const [selectedCountriesFilters, setSelectedCountriesFilters] = useState([]);
-  const [favoriteUsers, setFavoriteUsers] = useState([]);
+  const sessionFavoritUsers = JSON.parse(sessionStorage.getItem("favoritUsers"));
+  const [favoriteUsers, setFavoriteUsers] = useState(sessionFavoritUsers);
   const { tabValue, setTabValue } = useContext(TabContext);
+  const { users, isLoading, increasePage } = usePeopleFetch(tabValue);
+  const usersListRef = useRef();
 
   const handleMouseEnter = (index) => {
     setHoveredUserId(index);
@@ -25,9 +26,12 @@ const UserList = () => {
   const handleMouseLeave = () => {
     setHoveredUserId();
   };
-  const handleScroll = (e) => {
-    if (window.innerHeight + e.target.scrollTop >= e.target.scrollHeight) {
-      increasePage();
+  const handleScroll = () => {
+    if (usersListRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = usersListRef.current;
+      if (scrollTop + clientHeight === scrollHeight) {
+        increasePage(); 
+      }
     }
   };
 
@@ -36,7 +40,6 @@ const UserList = () => {
   }, []);
 
   const chooseFavorite = (user) => {
-    const sessionFavoritUsers = JSON.parse(sessionStorage.getItem("favoritUsers"));
     let newFavoriteUsers = [...sessionFavoritUsers];
     const isAlreadyInFavorites = newFavoriteUsers.find(
       (x) => user?.id?.value === x?.id?.value
@@ -44,19 +47,17 @@ const UserList = () => {
     if (!isAlreadyInFavorites) {
       newFavoriteUsers.push(user);
     } else {
-      newFavoriteUsers = favoriteUsers.filter(
-        (favorituser) => {
-          return parseInt(user.id.value) !== parseInt(favorituser.id.value)
-        }
-      );
+      newFavoriteUsers = favoriteUsers.filter((favorituser) => {
+        return parseInt(user.id.value) !== parseInt(favorituser.id.value);
+      });
     }
     setFavoriteUsers(newFavoriteUsers);
     sessionStorage.setItem("favoritUsers", JSON.stringify(newFavoriteUsers));
   };
 
   const checkIfFavorite = (user) => {
-    const isFavorite = favoriteUsers?.findIndex((favoriteUser) => {
-      return favoriteUser.id === user.id;
+    const isFavorite = sessionFavoritUsers?.findIndex((favoriteUser) => {
+      return favoriteUser.id.value === user.id.value;
     });
     if (isFavorite === -1) return false;
     return true;
@@ -84,18 +85,19 @@ const UserList = () => {
   };
 
   const dataToPresentInList = () => {
-    
     const filteredUsers = selectedCountriesFilters.length
       ? users.filter((user) => selectedCountriesFilters.includes(user.nat))
       : users;
     if (tabValue === 0) return filteredUsers;
     if (tabValue === 1) {
       const sessionFavoritUsers = JSON.parse(sessionStorage.getItem("favoritUsers"));
-      let filteredFavoriteUser = []
-      if (selectedCountriesFilters.length){
-        filteredFavoriteUser = sessionFavoritUsers.filter((user) =>  selectedCountriesFilters.includes(user.nat))
+      let filteredFavoriteUser = [];
+      if (selectedCountriesFilters.length) {
+        filteredFavoriteUser = sessionFavoritUsers.filter((user) =>
+          selectedCountriesFilters.includes(user.nat)
+        );
       }
-      return selectedCountriesFilters.length? filteredFavoriteUser:sessionFavoritUsers;
+      return selectedCountriesFilters.length ? filteredFavoriteUser : sessionFavoritUsers;
     }
   };
   return (
@@ -107,9 +109,9 @@ const UserList = () => {
         <CheckBox value="GE" label="Germany" onChange={handleCheckCountry} />
         <CheckBox value="MX" label="Mexico" onChange={handleCheckCountry} />
       </S.Filters>
-      <S.List className="list-wrapper">
+      <S.List className="list-wrapper" ref={usersListRef}>
         {dataToPresentInList()?.map((user, index) => {
-          const isHeartIconVisible = (index === hoveredUserId || checkIfFavorite(user));
+          const isHeartIconVisible = index === hoveredUserId || checkIfFavorite(user);
           return (
             <S.User
               key={index}

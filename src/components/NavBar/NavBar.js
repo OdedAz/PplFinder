@@ -8,7 +8,6 @@ const NavBar = () => {
   const {tabValue, setTabValue} = useContext(TabContext);
   const handleChange = (_e,tabValue) => {
     setTabValue(tabValue);
-
   };
   return (
     <AppBar position="static" color="transparent" style={{ position: "fixed", top: 0 }}>
