@@ -11,12 +11,12 @@ import * as S from "./style";
 import { countryFilters } from "../../constant";
 
 const UserList = () => {
+  const { tabValue, setTabValue } = useContext(TabContext);
+  const { users, isLoading, increasePage } = usePeopleFetch();
   const [hoveredUserId, setHoveredUserId] = useState();
   const [selectedCountriesFilters, setSelectedCountriesFilters] = useState([]);
   const sessionFavoritUsers = JSON.parse(sessionStorage.getItem("favoritUsers"));
   const [favoriteUsers, setFavoriteUsers] = useState(sessionFavoritUsers);
-  const { tabValue, setTabValue } = useContext(TabContext);
-  const { users, isLoading, increasePage } = usePeopleFetch(tabValue);
   const usersListRef = useRef();
 
   const handleMouseEnter = (index) => {
@@ -27,14 +27,16 @@ const UserList = () => {
     setHoveredUserId();
   };
   const handleScroll = () => {
+    console.log("here: ", {tabValue})
+
     if (usersListRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = usersListRef.current;
       if (scrollTop + clientHeight === scrollHeight) {
+        console.log("reached bottom");
         increasePage(); 
       }
     }
   };
-
   useEffect(() => {
     document.querySelector(".list-wrapper").addEventListener("scroll", handleScroll);
   }, []);
@@ -100,6 +102,7 @@ const UserList = () => {
       return selectedCountriesFilters.length ? filteredFavoriteUser : sessionFavoritUsers;
     }
   };
+
   return (
     <S.UserList>
       <S.Filters>

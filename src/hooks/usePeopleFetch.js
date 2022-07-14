@@ -3,14 +3,14 @@ import axios from "axios";
 import { useUpdateEffect } from "ahooks";
 import { useCallback } from "react";
 
-export const usePeopleFetch = (tabValue) => {
+export const usePeopleFetch = () => {
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(0);
   const increasePage = () => {
-    setPage((prev) => prev + 1);
+   setPage((prev) => prev + 1);
   }
-  console.log({page})
+  
   const fetchUsers = useCallback(async () => {
     setIsLoading(true);
 

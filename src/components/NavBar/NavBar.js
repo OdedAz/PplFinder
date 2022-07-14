@@ -6,6 +6,7 @@ import { TabContext } from "TabContext";
 
 const NavBar = () => {
   const {tabValue, setTabValue} = useContext(TabContext);
+
   const handleChange = (_e,tabValue) => {
     setTabValue(tabValue);
   };
