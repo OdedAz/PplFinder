@@ -7,7 +7,7 @@ import * as S from "./style";
 const FavoriteUsers = () => {
   console.log("favorit users page")
   const users  =  JSON.parse(sessionStorage.getItem("favoritUsers"));
-  console.log({user})
+  console.log({users})
   const isLoading = true;
   const dataSorce = "FavoritUsers"
   return (

@@ -9,7 +9,7 @@ import FavoriteIcon from "@material-ui/icons/Favorite";
 import * as S from "./style";
 import { countryFilters } from "../../constant";
 
-const UserList = ({ users, isLoading, increasePage }) => {
+const UserList = ({ users, isLoading, increasePage, dataSorce }) => {
   console.log("home page")
 
   const [hoveredUserId, setHoveredUserId] = useState();
@@ -25,7 +25,7 @@ const UserList = ({ users, isLoading, increasePage }) => {
     setHoveredUserId();
   };
   const handleScroll = () => {
-    if (usersListRef.current) {
+    if (usersListRef.current && dataSorce==="home") {
       const { scrollTop, scrollHeight, clientHeight } = usersListRef.current;
       if (scrollTop + clientHeight === scrollHeight) {
         increasePage();

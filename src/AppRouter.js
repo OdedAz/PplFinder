@@ -14,12 +14,8 @@ const AppRouter = () => {
         <TabContext.Provider value={{tabValue, setTabValue}} >
         <NavBar />
         <Switch>
-          <Route exact path="/"  > 
-            <Home />
-          </Route>
-          <Route path="/favorite-users"  > 
-            <FavoriteUsers />
-          </Route>
+          <Route exact path="/favoriteusers" component={FavoriteUsers} /> 
+          <Route exact path="/" component={Home} /> 
         </Switch>
         </TabContext.Provider >
       </Router>
