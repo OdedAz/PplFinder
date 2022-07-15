@@ -1,6 +1,7 @@
 {
   "name": "ppl-finder",
   "version": "1.0.7",
+  "homepage": "https://OdedAz.github.io",
   "bin": "./bin/cli.js",
   "license": "MIT",
   "repository": "https://github.com/powerlink/PplFinder",
@@ -13,6 +14,7 @@
     "ahooks": "^3.5.2",
     "axios": "^0.21.1",
     "eslint-plugin-react-hooks": "^4.2.0",
+    "gh-pages": "^4.0.0",
     "history": "^4.10.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -27,7 +29,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
