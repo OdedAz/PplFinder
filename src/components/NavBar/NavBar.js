@@ -1,13 +1,19 @@
-import React, { useContext } from "react";
+import React, { useState } from "react";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import { TabContext } from "TabContext";
+import { routes } from "./routes";
+import { useHistory, useLocation } from "react-router";
+
+const getInitTabValue = (pathname) => routes.findIndex(({ path }) => path === pathname);
 
 const NavBar = () => {
-  const {tabValue, setTabValue} = useContext(TabContext);
+  const { pathname } = useLocation();
+  const [tabValue, setTabValue] = useState(getInitTabValue(pathname));
+  const history = useHistory();
 
-  const handleChange = (_e,tabValue) => {
+  const handleChange = (_e, tabValue) => {
+    history.push(routes[tabValue].path);
     setTabValue(tabValue);
   };
   return (
@@ -19,8 +25,9 @@ const NavBar = () => {
         indicatorColor="primary"
         textColor="primary"
       >
-        <Tab label="Home" index={0} href="/"/>
-        <Tab label="Favorites" index={1} href="/favoritusers"/>
+        {routes.map(({ name }, index) => (
+          <Tab label={name} index={index} key={index} />
+        ))}
       </Tabs>
     </AppBar>
   );

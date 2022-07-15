@@ -10,13 +10,12 @@ import * as S from "./style";
 import { countryFilters } from "../../constant";
 
 const UserList = ({ users, isLoading, increasePage, dataSorce }) => {
-  console.log("home page")
-
   const [hoveredUserId, setHoveredUserId] = useState();
   const [selectedCountriesFilters, setSelectedCountriesFilters] = useState([]);
   const sessionFavoritUsers = JSON.parse(sessionStorage.getItem("favoritUsers"));
   const [favoriteUsers, setFavoriteUsers] = useState(sessionFavoritUsers);
   const usersListRef = useRef();
+
   const handleMouseEnter = (index) => {
     setHoveredUserId(index);
   };
@@ -24,14 +23,16 @@ const UserList = ({ users, isLoading, increasePage, dataSorce }) => {
   const handleMouseLeave = () => {
     setHoveredUserId();
   };
+
   const handleScroll = () => {
-    if (usersListRef.current && dataSorce==="home") {
+    if (usersListRef.current && dataSorce === "home") {
       const { scrollTop, scrollHeight, clientHeight } = usersListRef.current;
       if (scrollTop + clientHeight === scrollHeight) {
         increasePage();
       }
     }
   };
+  
   useEffect(() => {
     document.querySelector(".list-wrapper").addEventListener("scroll", handleScroll);
   }, []);
