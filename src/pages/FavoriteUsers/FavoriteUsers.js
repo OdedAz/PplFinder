@@ -5,8 +5,9 @@ import Home from "pages/Home";
 import * as S from "./style";
 
 const FavoriteUsers = () => {
+  let isLoading = true;
   const users  =  JSON.parse(sessionStorage.getItem("favoritUsers"));
-  const isLoading = true;
+  isLoading = false;
   const dataSorce = "FavoritUsers"
   return (
     <S.Home>
