@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.js": "/static/js/main.b6d9047a.chunk.js",
-    "main.js.map": "/static/js/main.b6d9047a.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.4bebf6fb.js",
-    "runtime-main.js.map": "/static/js/runtime-main.4bebf6fb.js.map",
-    "static/js/2.8eea7f5b.chunk.js": "/static/js/2.8eea7f5b.chunk.js",
-    "static/js/2.8eea7f5b.chunk.js.map": "/static/js/2.8eea7f5b.chunk.js.map",
-    "index.html": "/index.html",
-    "static/js/2.8eea7f5b.chunk.js.LICENSE.txt": "/static/js/2.8eea7f5b.chunk.js.LICENSE.txt"
+    "main.js": "/PplFinder/static/js/main.b6d9047a.chunk.js",
+    "main.js.map": "/PplFinder/static/js/main.b6d9047a.chunk.js.map",
+    "runtime-main.js": "/PplFinder/static/js/runtime-main.f7a57c8a.js",
+    "runtime-main.js.map": "/PplFinder/static/js/runtime-main.f7a57c8a.js.map",
+    "static/js/2.552e88f1.chunk.js": "/PplFinder/static/js/2.552e88f1.chunk.js",
+    "static/js/2.552e88f1.chunk.js.map": "/PplFinder/static/js/2.552e88f1.chunk.js.map",
+    "index.html": "/PplFinder/index.html",
+    "static/js/2.552e88f1.chunk.js.LICENSE.txt": "/PplFinder/static/js/2.552e88f1.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.4bebf6fb.js",
-    "static/js/2.8eea7f5b.chunk.js",
+    "static/js/runtime-main.f7a57c8a.js",
+    "static/js/2.552e88f1.chunk.js",
     "static/js/main.b6d9047a.chunk.js"
   ]
 }
