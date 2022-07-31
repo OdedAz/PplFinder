@@ -8,9 +8,9 @@ export const usePeopleFetch = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(0);
   const increasePage = () => {
-   setPage((prev) => prev + 1);
-  }
-  
+    setPage((prev) => prev + 1);
+  };
+
   const fetchUsers = useCallback(async () => {
     setIsLoading(true);
 
@@ -25,7 +25,7 @@ export const usePeopleFetch = () => {
   }, [page]);
 
   useEffect(() => {
-      fetchUsers();
+    fetchUsers();
   }, [fetchUsers]);
 
   useUpdateEffect(() => {

@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState, useRef } from "react";
 import Text from "components/Text";
 import Spinner from "components/Spinner";
 import CheckBox from "components/CheckBox";
-import { TabContext } from "TabContext";
 
 import IconButton from "@material-ui/core/IconButton";
 import FavoriteIcon from "@material-ui/icons/Favorite";
@@ -25,14 +24,14 @@ const UserList = ({ users, isLoading, increasePage, dataSorce }) => {
   };
 
   const handleScroll = () => {
-    if (usersListRef.current && dataSorce === "home") {
-      const { scrollTop, scrollHeight, clientHeight } = usersListRef.current;
+    if (usersListRef?.current && dataSorce === "home") {
+      const { scrollTop, scrollHeight, clientHeight } = usersListRef?.current;
       if (scrollTop + clientHeight === scrollHeight) {
         increasePage();
       }
     }
   };
-  
+
   useEffect(() => {
     document.querySelector(".list-wrapper").addEventListener("scroll", handleScroll);
   }, []);
@@ -56,21 +55,27 @@ const UserList = ({ users, isLoading, increasePage, dataSorce }) => {
 
   const checkIfFavorite = (user) => {
     const isFavorite = sessionFavoritUsers?.findIndex((favoriteUser) => {
-      return favoriteUser.id.value === user.id.value;
+      if (
+        favoriteUser?.id?.value === user?.id?.value &&
+        favoriteUser?.id?.value &&
+        user?.id?.value
+      )
+        return true;
     });
-    if (isFavorite === -1) return false;
+    if (isFavorite === -1 || isFavorite === undefined) return false;
+    console.log("TRUE check both prints up to see if equele");
     return true;
   };
 
   const handleCheckCountry = (keyToMatch) => {
-    const isFilteredCountry = selectedCountriesFilters.find((key) => key === keyToMatch);
+    const isFilteredCountry = selectedCountriesFilters?.find((key) => key === keyToMatch);
     const newSelectedCountriesFilters = [...selectedCountriesFilters];
 
     if (!isFilteredCountry) {
-      const filterToAdd = countryFilters.find(
-        (countryFilter) => countryFilter.key === keyToMatch
+      const filterToAdd = countryFilters?.find(
+        (countryFilter) => countryFilter?.key === keyToMatch
       );
-      newSelectedCountriesFilters.push(filterToAdd.key);
+      newSelectedCountriesFilters.push(filterToAdd?.key);
       setSelectedCountriesFilters(newSelectedCountriesFilters);
     } else {
       const indexOfFilter = selectedCountriesFilters.findIndex(
@@ -79,15 +84,15 @@ const UserList = ({ users, isLoading, increasePage, dataSorce }) => {
       newSelectedCountriesFilters.splice(indexOfFilter, 1);
       setSelectedCountriesFilters(newSelectedCountriesFilters);
 
-      if (newSelectedCountriesFilters.length === 0) setSelectedCountriesFilters([]);
+      if (newSelectedCountriesFilters?.length === 0) setSelectedCountriesFilters([]);
     }
   };
 
   const dataToPresentInList = () => {
     const filteredUsers = selectedCountriesFilters.length
-      ? users.filter((user) => selectedCountriesFilters.includes(user.nat))
+      ? users?.filter((user) => selectedCountriesFilters.includes(user.nat))
       : users;
-    return selectedCountriesFilters.length ? filteredUsers : users;
+    return selectedCountriesFilters?.length ? filteredUsers : users;
   };
 
   return (
@@ -115,7 +120,7 @@ const UserList = ({ users, isLoading, increasePage, dataSorce }) => {
                 </Text>
                 <Text size="14px">{user?.email}</Text>
                 <Text size="14px">
-                  {user?.location?.street.number} {user?.location?.street?.name}
+                  {user?.location?.street?.number} {user?.location?.street?.name}
                 </Text>
                 <Text size="14px">
                   {user?.location?.city} {user?.location?.country}

@@ -9,13 +9,11 @@ const getInitTabValue = (pathname) => routes.findIndex(({ path }) => path === pa
 
 const NavBar = () => {
   const { pathname } = useLocation();
-  console.log({pathname})
-
   const [tabValue, setTabValue] = useState(getInitTabValue(pathname));
   const history = useHistory();
 
   const handleChange = (_e, tabValue) => {
-    history.push(routes[tabValue].path);
+    history.push(routes[tabValue]?.path);
     setTabValue(tabValue);
   };
   return (
