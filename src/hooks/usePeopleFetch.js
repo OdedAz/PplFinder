@@ -17,7 +17,7 @@ export const usePeopleFetch = () => {
     const response = await axios.get(
       `https://randomuser.me/api/?results=25&page=${page}`
     );
-    if (response && response.data && response.data.results) {
+    if (response?.data?.results) {
       setUsers((prevUsers) => prevUsers.concat(response.data.results));
     } else {
       // handle error situation
