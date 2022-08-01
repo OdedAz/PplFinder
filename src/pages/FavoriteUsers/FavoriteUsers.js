@@ -1,14 +1,11 @@
 import React from "react";
 import Text from "components/Text";
 import UserList from "components/UserList";
-import Home from "pages/Home";
 import * as S from "./style";
 
 const FavoriteUsers = () => {
-  let isLoading = true;
   const users  =  JSON.parse(sessionStorage.getItem("favoriteUsers"));
-  isLoading = false;
-  const dataSorce = "favoriteUsers"
+  const dataSource = "favoriteUsers"
   return (
     <S.Home>
       <S.Content>
@@ -17,7 +14,7 @@ const FavoriteUsers = () => {
             PplFinder
           </Text>
         </S.Header>
-        <UserList users={users} isLoading={isLoading} dataSorce={dataSorce}/>
+        <UserList users={users} dataSource={dataSource}/>
       </S.Content>
     </S.Home>
   );

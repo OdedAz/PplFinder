@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Text from "components/Text";
 import Spinner from "components/Spinner";
 import CheckBox from "components/CheckBox";
@@ -8,11 +8,21 @@ import FavoriteIcon from "@material-ui/icons/Favorite";
 import * as S from "./style";
 import { countryFilters } from "../../constant";
 
-const UserList = ({ users, isLoading, increasePage, dataSorce }) => {
+const FiltersHeader = ({onChange}) =>
+  (<S.Filters>
+    <CheckBox value="BR" label="Brazil" onChange={onChange} />
+    <CheckBox value="AU" label="Australia" onChange={onChange} />
+    <CheckBox value="CA" label="Canada" onChange={onChange} />
+    <CheckBox value="GE" label="Germany" onChange={onChange} />
+    <CheckBox value="MX" label="Mexico" onChange={onChange} />
+  </S.Filters>);
+
+
+const UserList = ({ users, isLoading=false, increasePage, dataSource }) => {
   const [hoveredUserId, setHoveredUserId] = useState();
   const [selectedCountriesFilters, setSelectedCountriesFilters] = useState([]);
-  const sessionfavoriteUsers = JSON.parse(sessionStorage.getItem("favoriteUsers"));
-  const [favoriteUsers, setFavoriteUsers] = useState(sessionfavoriteUsers);
+  const sessionFavoriteUsers = JSON.parse(sessionStorage.getItem("favoriteUsers"));
+  const [favoriteUsers, setFavoriteUsers] = useState(sessionFavoriteUsers);
   const usersListRef = useRef();
 
   const handleMouseEnter = (index) => {
@@ -20,11 +30,11 @@ const UserList = ({ users, isLoading, increasePage, dataSorce }) => {
   };
 
   const handleMouseLeave = () => {
-    setHoveredUserId();
+    setHoveredUserId(null);
   };
 
   const handleScroll = () => {
-    if (usersListRef?.current && dataSorce === "home") {
+    if (usersListRef?.current && dataSource === "home") {
       const { scrollTop, scrollHeight, clientHeight } = usersListRef?.current;
       if (scrollTop + clientHeight === scrollHeight) {
         increasePage();
@@ -37,19 +47,19 @@ const UserList = ({ users, isLoading, increasePage, dataSorce }) => {
   }, []);
 
   const chooseFavorite = async (user) => {
-    const oldfavoriteUsers = sessionfavoriteUsers ? [...sessionfavoriteUsers] : [];
-    let newFavoriteUsers = [...oldfavoriteUsers];
+    const oldFavoriteUsers = sessionFavoriteUsers ? [...sessionFavoriteUsers] : [];
+    let newFavoriteUsers = [...oldFavoriteUsers];
     const isAlreadyInFavorites = newFavoriteUsers.find(
       (x) => user?.id?.value === x?.id?.value
     );
     if (!isAlreadyInFavorites) {
       newFavoriteUsers.push(user);
     } else {
-      newFavoriteUsers = favoriteUsers.filter((favorituser) => {
-        console.log("test : ", user?.id?.value !== favorituser?.id?.value);
+      newFavoriteUsers = favoriteUsers.filter((favoriteUser) => {
+        console.log("test : ", user?.id?.value !== favoriteUser?.id?.value);
         return (
-          parseInt(user?.id?.value) !== parseInt(favorituser?.id?.value) &&
-          user?.id?.value !== favorituser?.id?.value
+          parseInt(user?.id?.value) !== parseInt(favoriteUser?.id?.value) &&
+          user?.id?.value !== favoriteUser?.id?.value
         );
       });
     }
@@ -58,7 +68,7 @@ const UserList = ({ users, isLoading, increasePage, dataSorce }) => {
   };
 
   const checkIfFavorite = (user) => {
-    const isFavorite = sessionfavoriteUsers?.findIndex((favoriteUser) => {
+    const isFavorite = sessionFavoriteUsers?.findIndex((favoriteUser) => {
       if (
         favoriteUser?.id?.value === user?.id?.value &&
         favoriteUser?.id?.value &&
@@ -98,18 +108,12 @@ const UserList = ({ users, isLoading, increasePage, dataSorce }) => {
       : usersList;
   };
   const dataToPresentInList = () => {
-    return filterUsers(dataSorce === "favoriteUsers" ? favoriteUsers : users);
+    return filterUsers(dataSource === "favoriteUsers" ? favoriteUsers : users);
   };
 
   return (
     <S.UserList>
-      <S.Filters>
-        <CheckBox value="BR" label="Brazil" onChange={handleCheckCountry} />
-        <CheckBox value="AU" label="Australia" onChange={handleCheckCountry} />
-        <CheckBox value="CA" label="Canada" onChange={handleCheckCountry} />
-        <CheckBox value="GE" label="Germany" onChange={handleCheckCountry} />
-        <CheckBox value="MX" label="Mexico" onChange={handleCheckCountry} />
-      </S.Filters>
+      <FiltersHeader onChange={handleCheckCountry}/>
       <S.List className="list-wrapper" ref={usersListRef}>
         {dataToPresentInList()?.map((user, index) => {
           const isHeartIconVisible = index === hoveredUserId || checkIfFavorite(user);
