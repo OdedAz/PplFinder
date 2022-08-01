@@ -8,17 +8,17 @@ import FavoriteIcon from "@material-ui/icons/Favorite";
 import * as S from "./style";
 import { countryFilters } from "../../constant";
 
-const FiltersHeader = ({onChange}) =>
-  (<S.Filters>
+const FiltersHeader = ({ onChange }) => (
+  <S.Filters>
     <CheckBox value="BR" label="Brazil" onChange={onChange} />
     <CheckBox value="AU" label="Australia" onChange={onChange} />
     <CheckBox value="CA" label="Canada" onChange={onChange} />
     <CheckBox value="GE" label="Germany" onChange={onChange} />
     <CheckBox value="MX" label="Mexico" onChange={onChange} />
-  </S.Filters>);
+  </S.Filters>
+);
 
-
-const UserList = ({ users, isLoading=false, increasePage, dataSource }) => {
+const UserList = ({ users, isLoading = false, increasePage, dataSource }) => {
   const [hoveredUserId, setHoveredUserId] = useState();
   const [selectedCountriesFilters, setSelectedCountriesFilters] = useState([]);
   const sessionFavoriteUsers = JSON.parse(sessionStorage.getItem("favoriteUsers"));
@@ -113,7 +113,7 @@ const UserList = ({ users, isLoading=false, increasePage, dataSource }) => {
 
   return (
     <S.UserList>
-      <FiltersHeader onChange={handleCheckCountry}/>
+      <FiltersHeader onChange={handleCheckCountry} />
       <S.List className="list-wrapper" ref={usersListRef}>
         {dataToPresentInList()?.map((user, index) => {
           const isHeartIconVisible = index === hoveredUserId || checkIfFavorite(user);
