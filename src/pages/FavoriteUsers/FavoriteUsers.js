@@ -6,9 +6,9 @@ import * as S from "./style";
 
 const FavoriteUsers = () => {
   let isLoading = true;
-  const users  =  JSON.parse(sessionStorage.getItem("favoritUsers"));
+  const users  =  JSON.parse(sessionStorage.getItem("favoriteUsers"));
   isLoading = false;
-  const dataSorce = "FavoritUsers"
+  const dataSorce = "favoriteUsers"
   return (
     <S.Home>
       <S.Content>

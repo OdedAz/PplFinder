@@ -11,8 +11,8 @@ import { countryFilters } from "../../constant";
 const UserList = ({ users, isLoading, increasePage, dataSorce }) => {
   const [hoveredUserId, setHoveredUserId] = useState();
   const [selectedCountriesFilters, setSelectedCountriesFilters] = useState([]);
-  const sessionFavoritUsers = JSON.parse(sessionStorage.getItem("favoritUsers"));
-  const [favoriteUsers, setFavoriteUsers] = useState(sessionFavoritUsers);
+  const sessionfavoriteUsers = JSON.parse(sessionStorage.getItem("favoriteUsers"));
+  const [favoriteUsers, setFavoriteUsers] = useState(sessionfavoriteUsers);
   const usersListRef = useRef();
 
   const handleMouseEnter = (index) => {
@@ -36,9 +36,9 @@ const UserList = ({ users, isLoading, increasePage, dataSorce }) => {
     document.querySelector(".list-wrapper").addEventListener("scroll", handleScroll);
   }, []);
 
-  const chooseFavorite = (user) => {
-    const oldFavoritUsers = sessionFavoritUsers ? [...sessionFavoritUsers] : [];
-    let newFavoriteUsers = [...oldFavoritUsers];
+  const chooseFavorite = async (user) => {
+    const oldfavoriteUsers = sessionfavoriteUsers ? [...sessionfavoriteUsers] : [];
+    let newFavoriteUsers = [...oldfavoriteUsers];
     const isAlreadyInFavorites = newFavoriteUsers.find(
       (x) => user?.id?.value === x?.id?.value
     );
@@ -46,15 +46,19 @@ const UserList = ({ users, isLoading, increasePage, dataSorce }) => {
       newFavoriteUsers.push(user);
     } else {
       newFavoriteUsers = favoriteUsers.filter((favorituser) => {
-        return parseInt(user.id.value) !== parseInt(favorituser.id.value);
+        console.log("test : ", user?.id?.value !== favorituser?.id?.value);
+        return (
+          parseInt(user?.id?.value) !== parseInt(favorituser?.id?.value) &&
+          user?.id?.value !== favorituser?.id?.value
+        );
       });
     }
-    setFavoriteUsers(newFavoriteUsers);
-    sessionStorage.setItem("favoritUsers", JSON.stringify(newFavoriteUsers));
+    await setFavoriteUsers(newFavoriteUsers);
+    await sessionStorage.setItem("favoriteUsers", JSON.stringify(newFavoriteUsers));
   };
 
   const checkIfFavorite = (user) => {
-    const isFavorite = sessionFavoritUsers?.findIndex((favoriteUser) => {
+    const isFavorite = sessionfavoriteUsers?.findIndex((favoriteUser) => {
       if (
         favoriteUser?.id?.value === user?.id?.value &&
         favoriteUser?.id?.value &&
@@ -88,11 +92,13 @@ const UserList = ({ users, isLoading, increasePage, dataSorce }) => {
     }
   };
 
+  const filterUsers = (usersList) => {
+    return selectedCountriesFilters.length
+      ? usersList?.filter((user) => selectedCountriesFilters.includes(user.nat))
+      : usersList;
+  };
   const dataToPresentInList = () => {
-    const filteredUsers = selectedCountriesFilters.length
-      ? users?.filter((user) => selectedCountriesFilters.includes(user.nat))
-      : users;
-    return selectedCountriesFilters?.length ? filteredUsers : users;
+    return filterUsers(dataSorce === "favoriteUsers" ? favoriteUsers : users);
   };
 
   return (
